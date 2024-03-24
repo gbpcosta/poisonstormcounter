@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Poison Storm App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            margin: auto;
+            height: 90vh;
+            width: 90vw;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            padding: 0;
+        }
+
+        .counter-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+        }
+
+        .counter-container {
+            display: flex;
+            flex-direction: row;
+            position: relative;
+            font-size: 1vw;
+            margin: 0.1vw;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 0.5vw;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.1);
+            flex: 1;
+            width: 25vw;
+            height: 13vh;
+        }
+
+        .counter-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .counter-content img {
+            height: 3vh;
+            width: auto;
+            margin: 7px;
+        }
+
+        .counter-content span {
+            font-size: 4vh;
+        }
+
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            font-size: 4vh;
+        }
+
+        .counter-background {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .counter {
+            z-index: 1;
+            margin: 0 1vw;
+        }
+
+        button {
+            z-index: 1;
+            background-color: transparent;
+            color: #fff;
+            border: none;
+            padding: 0.5vw 1vw;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 3vh;
+            width: 100%;
+            height: 100%;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .reset-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .reset-buttons div {
+            flex: 1;
+            margin: 5px;
+        }
+
+        .reset-buttons div button {
+            box-sizing: border-box;
+            background-color: #444;
+            width: 100%;
+            height: 5vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reset-buttons">
+        <div id="reset-all"></div>
+        <div id="reset-mana"></div>
+    </div>
+    <div id="counters"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fitty/2.3.5/fitty.min.js"></script>
+    <script>
+        const resetAllElement = document.getElementById('reset-all');       
+        const resetAllButton = document.createElement('button');
+        resetAllButton.innerText = 'New Game';
+        resetAllElement.appendChild(resetAllButton);
+
+        const resetManaElement = document.getElementById('reset-mana');      
+        const resetColorsButton = document.createElement('button');
+        resetColorsButton.innerText = 'Reset Mana';
+        resetManaElement.appendChild(resetColorsButton);
+
+        const rows = [
+            [
+                { name: 'player-1', count: 20, img: 'imgs/planeswalker.png' },
+                { name: 'storm', count: 0, img: 'imgs/storm.png' },
+                { name: 'player-2', count: 20, img: 'imgs/planeswalker.png' },
+                { name: 'poison', count: 0, img: 'imgs/poison.png' },
+            ],
+            [
+                { name: 'blue', count: 0, img: 'imgs/blue.png' },
+                { name: 'black', count: 0, img: 'imgs/black.png' },
+                { name: 'green', count: 0, img: 'imgs/green.png' },
+                { name: 'colourless', count: 0, img: 'imgs/colourless.png' },
+            ],
+            [
+                { name: 'saprazzanskerry-1', count: 0, img: 'imgs/saprazzanskerry.png' },
+                { name: 'saprazzanskerry-2', count: 0, img: 'imgs/saprazzanskerry.png' },
+                { name: 'saprazzanskerry-3', count: 0, img: 'imgs/saprazzanskerry.png' },
+                { name: 'saprazzanskerry-4', count: 0, img: 'imgs/saprazzanskerry.png' },
+            ],
+            [ 
+                { name: 'peatbog-1', count: 0, img: 'imgs/peatbog.png' },
+                { name: 'peatbog-2', count: 0, img: 'imgs/peatbog.png' },
+                { name: 'peatbog-3', count: 0, img: 'imgs/peatbog.png' },
+                { name: 'peatbog-4', count: 0, img: 'imgs/peatbog.png' },
+            ],
+            [
+                { name: 'hickorywoodlot-1', count: 0, img: 'imgs/hickorywoodlot.png' },
+                { name: 'hickorywoodlot-2', count: 0, img: 'imgs/hickorywoodlot.png' },
+                { name: 'hickorywoodlot-3', count: 0, img: 'imgs/hickorywoodlot.png' },
+                { name: 'hickorywoodlot-4', count: 0, img: 'imgs/hickorywoodlot.png' },
+            ],
+            [
+                { name: 'pentadprism-1', count: 0, img: 'imgs/pentadprism.png' },
+                { name: 'pentadprism-2', count: 0, img: 'imgs/pentadprism.png' },
+                { name: 'pentadprism-3', count: 0, img: 'imgs/pentadprism.png' },
+                { name: 'pentadprism-4', count: 0, img: 'imgs/pentadprism.png' },
+            ],
+            [
+                { name: 'everflowingchalice-1', count: 0, img: 'imgs/everflowingchalice.png' },
+                { name: 'everflowingchalice-2', count: 0, img: 'imgs/everflowingchalice.png' },
+                { name: 'everflowingchalice-3', count: 0, img: 'imgs/everflowingchalice.png' },
+                { name: 'everflowingchalice-4', count: 0, img: 'imgs/everflowingchalice.png' },
+            ],
+        ];
+
+        const countersElement = document.getElementById('counters');
+
+        for (const row of rows) {
+            const rowElement = document.createElement('div');
+            rowElement.className = 'counter-row';
+            countersElement.appendChild(rowElement);
+
+            for (const counter of row) {
+                const counterContainer = document.createElement('div');
+                counterContainer.className = 'counter-container';
+                if (counter.name === 'player-1' || counter.name === 'player-2' || counter.name === 'storm' || counter.name === 'poison' || counter.name === 'blue' || counter.name === 'black' || counter.name === 'green' || counter.name === 'colourless') {
+                    counterContainer.innerHTML = `
+                        <div class="counter-controls">
+                            <button id="${counter.name}-decrement" class="counter-button">-</button>
+                            <div class="counter-content">
+                                <img src="${counter.img}" alt="${counter.name}">
+                                <span id="${counter.name}" class="counter">${counter.count}</span>
+                            </div>
+                            <button id="${counter.name}-increment" class="counter-button">+</button>
+                        </div>
+                    `;
+                } else {
+                    counterContainer.innerHTML = `
+                        <div class="counter-background" style="background-image: url('${counter.img}')"></div>
+                        <div class="counter-controls">
+                            <button id="${counter.name}-decrement" class="counter-button">-</button>
+                            <div class="counter-content">
+                                <span id="${counter.name}" class="counter">${counter.count}</span>
+                            </div>
+                            <button id="${counter.name}-increment" class="counter-button">+</button>
+                        </div>
+                    `;
+                }
+                rowElement.appendChild(counterContainer);
+
+                document.getElementById(`${counter.name}-increment`).addEventListener('click', function () {
+                    counter.count++;
+                    document.getElementById(counter.name).innerText = counter.count;
+                });
+
+                document.getElementById(`${counter.name}-decrement`).addEventListener('click', function () {
+                    if (counter.count > 0) {
+                        counter.count--;
+                        document.getElementById(counter.name).innerText = counter.count;
+                    }
+                });
+            }
+        }
+
+        resetAllButton.addEventListener('click', function () {
+            for (let row of rows) {
+                for (let counter of row) {
+                    if (counter.name === 'player-1' || counter.name === 'player-2') {
+                        counter.count = 20;
+                    } else {
+                        counter.count = 0;
+                    }
+                    document.getElementById(counter.name).innerText = counter.count;
+                }
+            }
+        });
+
+        resetColorsButton.addEventListener('click', function () {
+            for (let counter of rows[1]) {
+                counter.count = 0;
+                document.getElementById(counter.name).innerText = counter.count;
+            }
+        });
+
+        // Get all the buttons
+        const buttons = document.querySelectorAll('.reset-buttons button');
+
+        // Adjust the font size of each button
+        buttons.forEach(button => fitty(button));
+
+        // Adjust the font size whenever the window is resized
+        window.addEventListener('resize', () => buttons.forEach(button => fitty(button)));
+    </script>
+</body>
+
+</html>
