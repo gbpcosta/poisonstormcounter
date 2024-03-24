@@ -111,6 +111,11 @@
             display: flex;
             justify-content: space-between;
             width: 100%;
+            transition: transform 0.1s ease-in-out;
+        }
+
+        .reset-button:active {
+            transform: scale(0.9);
         }
 
         .reset-buttons div {
@@ -119,10 +124,45 @@
         }
 
         .reset-buttons div button {
+            position: relative;
             box-sizing: border-box;
             background-color: #444;
             width: 100%;
             height: 5vh;
+            overflow: hidden;
+            &::before {
+                content: '';
+                height: 3px;
+                width: 0;
+                left: 0;
+                bottom: 0;
+                position: absolute;
+                background: rgb(127, 127, 127);
+                transition: 0.4s;
+            }
+            &:hover {
+                &::before {
+                width: 100%;
+                }
+            }
+            &:active {
+                background-color: rgba(255,255,255,.1);
+            }
+        }
+
+        span.ripple {
+            background-color: rgba(225, 225, 225, 0.7);
+            border-radius: 50%;
+            position: absolute;
+            transform: scale(0);
+            animation: ripple .5s linear forwards;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(1);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -138,12 +178,18 @@
     <script>
         const resetAllElement = document.getElementById('reset-all');       
         const resetAllButton = document.createElement('button');
-        resetAllButton.innerText = 'New Game';
+        const resetAllText = document.createElement('span');
+        resetAllText.innerText = 'New Game';
+        resetAllText.className = 'reset-button-text';
+        resetAllButton.appendChild(resetAllText);
         resetAllElement.appendChild(resetAllButton);
 
         const resetManaElement = document.getElementById('reset-mana');      
         const resetColorsButton = document.createElement('button');
-        resetColorsButton.innerText = 'Reset Mana';
+        const resetColorsText = document.createElement('span');
+        resetColorsText.innerText = 'Reset Mana';
+        resetColorsText.className = 'reset-button-text';
+        resetColorsButton.appendChild(resetColorsText);
         resetManaElement.appendChild(resetColorsButton);
 
         const rows = [
@@ -240,6 +286,22 @@
             }
         }
 
+        function createRipple(event) {
+            var ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+
+            var max = Math.max(this.offsetWidth, this.offsetHeight);
+
+            ripple.style.width = ripple.style.height = max * 2 + 'px';
+
+            var rect = this.getBoundingClientRect();
+
+            ripple.style.left = event.clientX - rect.left - max + 'px';
+            ripple.style.top = event.clientY - rect.top - max + 'px';
+
+            this.appendChild(ripple);
+        }
+
         resetAllButton.addEventListener('click', function () {
             for (let row of rows) {
                 for (let counter of row) {
@@ -253,6 +315,8 @@
             }
         });
 
+        resetAllButton.addEventListener('click', createRipple)
+
         resetColorsButton.addEventListener('click', function () {
             for (let counter of rows[1]) {
                 counter.count = 0;
@@ -260,14 +324,11 @@
             }
         });
 
-        // Get all the buttons
-        const buttons = document.querySelectorAll('.reset-buttons button');
+        resetColorsButton.addEventListener('click', createRipple)
 
-        // Adjust the font size of each button
-        buttons.forEach(button => fitty(button));
-
-        // Adjust the font size whenever the window is resized
-        window.addEventListener('resize', () => buttons.forEach(button => fitty(button)));
+        const buttonTexts = document.querySelectorAll('.reset-buttons button .button-text');
+        buttonTexts.forEach(buttonText => fitty(buttonText));
+        window.addEventListener('resize', () => buttonTexts.forEach(buttonText => fitty(buttonText)));
     </script>
 </body>
 
